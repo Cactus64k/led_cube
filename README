@@ -1,0 +1,12 @@
+This repo contains code of leds cube 4x4x4.
+To manipulate leds im using two shift registers 74HC595N.
+Microcontroller(ATmega328P) sent data to registers using SPI interface.
+Cube state changed by 16-bit timer.
+
+Details:
+1  - Arduino Nano with ATmega328p microcontroller
+2  - Shift registers 74HC595N
+16 - 0.25W resistors with 180ohm
+4  - 0.25W resistors with 2200ohm
+4  - NPN transystors BC547C
+64 - 5mm leds with green color
