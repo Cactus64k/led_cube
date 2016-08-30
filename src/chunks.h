@@ -25,9 +25,18 @@
 	#define TRANS3_PIN	PD4
 	#define TRANS4_PIN	PD5
 
+	typedef union LED_FRAME
+	{
+		uint16_t floor[4];
+		uint64_t qword;
+	} LED_FRAME;
+
 	void SPI_send_word(uint16_t word);
-	void cube_random();
+	void update_cube(LED_FRAME* frame);
 	void random_64(uint64_t* num);
 	void self_test();
+	void cube_random();
+	void cube_filing();
+	void cube_slow_random();
 
 #endif /* CHUNKS_H_ */

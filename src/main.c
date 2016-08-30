@@ -23,11 +23,18 @@ int main(void)
 	TCCR1A	= 0x0;
 	TCCR1B	= _BV(WGM12) | _BV(CS12) | _BV(CS10);	// предделитель 1024, очистка таймера по прерыванию
 	TIMSK1	= _BV(OCIE1A);							// прерывание по совпадению
-	OCR1A	= (F_CPU/1024)/2-1;						// раз в пол секунды
+	OCR1A	= (F_CPU/1024)/8-1;						// раз в 0.25 секунды
 	sei();
 
 	self_test();
-	cube_random();
+
+	while(1)
+	{
+		cube_slow_random();
+		cube_filing();
+		cube_random();
+
+	}
 }
 
 ISR(TIMER1_COMPA_vect)
@@ -37,42 +44,83 @@ ISR(TIMER1_COMPA_vect)
 
 void self_test()
 {
-	uint8_t transystors[] = {TRANS1_PIN, TRANS2_PIN, TRANS3_PIN, TRANS4_PIN};
-
-
-	for(uint8_t t=0; t<4; t++)
-	{
-		SPI_send_word(0xFFFF);
-
-		TRANS_PORT = TRANS_PORT | _BV(transystors[t]);
-		_delay_ms(500);
-		TRANS_PORT = TRANS_PORT & ~_BV(transystors[t]);
-	}
+	LED_FRAME frame = {.qword = 0xFFFFFFFFFFFFFFFF};
 
 	for(uint8_t c=0; c<60; c++)
-	{
-		for(uint8_t t=0; t<4; t++)
-		{
-			SPI_send_word(0xFFFF);
+		update_cube(&frame);
+}
 
-			TRANS_PORT = TRANS_PORT | _BV(transystors[t]);
-			_delay_ms(MULTIPLEXING_DELAY);
-			TRANS_PORT = TRANS_PORT & ~_BV(transystors[t]);
+void cube_filing()
+{
+	uint8_t cube[64];
+	LED_FRAME frame = {.qword = 0};
+
+	for(uint8_t i=0; i<64; i++)
+		cube[i] = i+1;
+
+	while(1)
+	{
+		frame.qword = 0;
+
+		for(uint8_t i=0; i<64; i++)
+		{
+			int r = rand()%64;
+
+			uint8_t tmp = cube[i];
+			cube[i] = cube[r];
+			cube[r] = tmp;
 		}
+
+		for(uint8_t i=0; i<64;)
+		{
+			if(need_update == true)
+			{
+				frame.qword = frame.qword | (UINT64_C(1) << cube[i]);
+
+				need_update = false;
+				i++;
+			}
+
+			update_cube(&frame);
+		}
+
+		for(uint8_t i=0; i<64;)
+		{
+			if(need_update == true)
+			{
+				frame.qword = frame.qword & ~(UINT64_C(1) << cube[i]);
+
+				need_update = false;
+				i++;
+			}
+
+			update_cube(&frame);
+		}
+	}
+}
+
+
+void cube_slow_random()
+{
+
+	LED_FRAME frame = {.qword = 0};
+
+	while(1)
+	{
+		if(need_update == true)
+		{
+			frame.qword = frame.qword | (UINT64_C(1) << rand()%64);
+			frame.qword = frame.qword & ~(UINT64_C(1) << rand()%64);
+			need_update = false;
+		}
+
+		update_cube(&frame);
 	}
 }
 
 
 void cube_random()
 {
-	uint8_t transystors[] = {TRANS1_PIN, TRANS2_PIN, TRANS3_PIN, TRANS4_PIN};
-
-	typedef union LED_FRAME
-	{
-		uint16_t floor[4];
-		uint64_t qword;
-	} LED_FRAME;
-
 	LED_FRAME frame;
 
 	while(1)
@@ -83,14 +131,7 @@ void cube_random()
 			need_update = false;
 		}
 
-		for(uint8_t t=0; t<4; t++)
-		{
-			SPI_send_word(frame.floor[t]);
-
-			TRANS_PORT = TRANS_PORT | _BV(transystors[t]);
-			_delay_ms(MULTIPLEXING_DELAY);
-			TRANS_PORT = TRANS_PORT & ~_BV(transystors[t]);
-		}
+		update_cube(&frame);
 	}
 }
 
@@ -101,6 +142,21 @@ void random_64(uint64_t* num)
 		int r1 = rand();
 		*num = (*num << 8) | (r1 & 0xFF);
 	}
+}
+
+void update_cube(LED_FRAME* frame)
+{
+	uint8_t transystors[] = {TRANS1_PIN, TRANS2_PIN, TRANS3_PIN, TRANS4_PIN};
+
+	for(uint8_t t=0; t<4; t++)
+	{
+		SPI_send_word(frame->floor[t]);
+
+		TRANS_PORT = TRANS_PORT | _BV(transystors[t]);
+		_delay_ms(MULTIPLEXING_DELAY);
+		TRANS_PORT = TRANS_PORT & ~_BV(transystors[t]);
+	}
+
 }
 
 void SPI_send_word(uint16_t word)
