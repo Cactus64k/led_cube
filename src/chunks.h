@@ -25,18 +25,22 @@
 	#define TRANS3_PIN	PD4
 	#define TRANS4_PIN	PD5
 
+	#define MULTIPLEXING_DELAY 4.0
+
 	typedef union LED_FRAME
 	{
 		uint16_t floor[4];
 		uint64_t qword;
 	} LED_FRAME;
 
+	extern bool need_update;
+
 	void SPI_send_word(uint16_t word);
 	void update_cube(LED_FRAME* frame);
 	void random_64(uint64_t* num);
-	void self_test();
-	void cube_random();
-	void cube_filing();
-	void cube_slow_random();
+	void cube_self_test(LED_FRAME* frame);
+	void cube_random(LED_FRAME* frame);
+	void cube_filing(LED_FRAME* frame);
+	void cube_slow_random(LED_FRAME* frame);
 
 #endif /* CHUNKS_H_ */
