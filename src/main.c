@@ -1,7 +1,22 @@
 #include "chunks.h"
 
-bool need_update = true;
+bool need_update	= true;
+uint8_t cube_mode		= 0;
 void test_pwm();
+
+ISR(TIMER1_COMPA_vect)
+{
+	need_update = true;
+}
+
+ISR(PCINT1_vect)
+{
+	if((PINC & _BV(PC5)))
+		cube_mode++;
+
+	cube_mode = (cube_mode > 3)? 0: cube_mode;
+
+}
 
 int main(void)
 {
@@ -15,26 +30,35 @@ int main(void)
 	SPI_send_word(0x0);
 
 	//##########################
+
 	cli();
 	TCCR1A	= 0x0;
 	TCCR1B	= _BV(WGM12) | _BV(CS12) | _BV(CS10);	// предделитель 1024, очистка таймера по прерыванию
 	TIMSK1	= _BV(OCIE1A);							// прерывание по совпадению
 	OCR1A	= (F_CPU/1024)/8-1;						// раз в 0.25 секунды
+
+	//##########################
+
+	DDRC	= DDRC & ~_BV(PC5);
+	PCICR	= _BV(PCIE1);
+	PCMSK1	= _BV(PCINT13);
+
 	sei();
 
 
+	DDRB	= DDRB | _BV(PB5);
 
-	uint8_t mode = 0;
+
 	LED_FRAME frame = {.qword = 0};
 
 	while(1)
 	{
-		switch (mode)
+		switch (cube_mode)
 		{
 			case 0:
 			{
 				cube_self_test(&frame);
-				mode++;
+				cube_mode++;
 				break;
 			}
 			case 1:
@@ -52,6 +76,8 @@ int main(void)
 				cube_random(&frame);
 				break;
 			}
+			default:
+				break;
 		}
 	}
 }
@@ -101,9 +127,3 @@ void test_pwm()
 		}
 	}
 }
-
-ISR(TIMER1_COMPA_vect)
-{
-	need_update = true;
-}
-

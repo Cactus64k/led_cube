@@ -1,8 +1,17 @@
 #ifndef CHUNKS_H_
 	#define CHUNKS_H_
 
-	#define F_CPU 16000000UL
-	#define DEVICE atmega328p
+	#ifndef FCPU
+		#define F_CPU 16000000UL
+	#endif
+
+	#ifndef DEVICE
+		#define DEVICE atmega325p
+	#endif
+
+	#ifndef __AVR_ATmega328P__
+		#define __AVR_ATmega328P__
+	#endif
 
 	#include <avr/io.h>
 	#include <util/delay.h>
