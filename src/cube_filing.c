@@ -33,7 +33,7 @@ void cube_filing(LED_FRAME* frame)
 		{
 			if(ittr < 64)
 				frame->qword = frame->qword ^ (UINT64_C(1) << cube[ittr]);
-			else
+			else if(ittr < 128)
 				frame->qword = frame->qword ^ (UINT64_C(1) << cube[ittr-64]);
 
 			need_update = false;

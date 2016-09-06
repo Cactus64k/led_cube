@@ -1,6 +1,6 @@
 #include "chunks.h"
 
-bool need_update	= true;
+bool need_update		= true;
 uint8_t cube_mode		= 0;
 void test_pwm();
 
@@ -15,7 +15,7 @@ ISR(PCINT1_vect)
 		cube_mode++;
 
 	cube_mode = (cube_mode > 3)? 0: cube_mode;
-
+	eeprom_write_byte(EEPROM_MODE_ADDRES, cube_mode);
 }
 
 int main(void)
@@ -31,11 +31,15 @@ int main(void)
 
 	//##########################
 
+	cube_mode	= eeprom_read_byte(EEPROM_MODE_ADDRES);
+
+	//##########################
+
 	cli();
 	TCCR1A	= 0x0;
 	TCCR1B	= _BV(WGM12) | _BV(CS12) | _BV(CS10);	// предделитель 1024, очистка таймера по прерыванию
 	TIMSK1	= _BV(OCIE1A);							// прерывание по совпадению
-	OCR1A	= (F_CPU/1024)/8-1;						// раз в 0.25 секунды
+	OCR1A	= (F_CPU/1024)/8-1;						// раз в 0.125 секунды
 
 	//##########################
 
@@ -74,6 +78,11 @@ int main(void)
 			case 3:
 			{
 				cube_random(&frame);
+				break;
+			}
+			case 0xFF:
+			{
+				cube_mode = 0;
 				break;
 			}
 			default:

@@ -29,3 +29,6 @@ load:
 erase:
 	avrdude -c $(PROGR) -p $(MCU) -e
 
+eeprom_read:
+	avrdude -c $(PROGR) -p $(MCU) -U eeprom:r:eeprom.hex:i
+

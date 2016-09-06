@@ -19,6 +19,7 @@
 	#include <stdbool.h>
 	#include <stdlib.h>
 	#include <avr/interrupt.h>
+	#include <avr/eeprom.h>
 
 	#define SPI_PORT	PORTB
 	#define SPI_DDR		DDRB
@@ -35,6 +36,8 @@
 	#define TRANS4_PIN	PD5
 
 	#define MULTIPLEXING_DELAY 4.0
+
+#define EEPROM_MODE_ADDRES ((uint8_t*)0)
 
 	typedef union LED_FRAME
 	{
