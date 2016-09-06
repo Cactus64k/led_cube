@@ -2,45 +2,42 @@
 
 void cube_filing(LED_FRAME* frame)
 {
-	uint8_t cube[64];
-	frame->qword = 0;
+	static uint8_t cube[64];
+	static uint8_t ittr = 0;
 
-	for(uint8_t i=0; i<64; i++)
-		cube[i] = i+1;
-
-
-	for(uint8_t i=0; i<64; i++)
+	if(ittr == 0)
 	{
-		int r = rand()%64;
+		frame->qword = 0;
 
-		uint8_t tmp = cube[i];
-		cube[i] = cube[r];
-		cube[r] = tmp;
-	}
+		for(uint8_t i=0; i<64; i++)
+			cube[i] = i+1;
 
-	frame->qword = 0;
 
-	for(uint8_t i=0; i<64;)
-	{
-		if(need_update == true)
+		for(uint8_t i=0; i<64; i++)
 		{
-			frame->qword = frame->qword | (UINT64_C(1) << cube[i]);
+			int r = rand()%64;
 
-			need_update = false;
-			i++;
+			uint8_t tmp = cube[i];
+			cube[i] = cube[r];
+			cube[r] = tmp;
 		}
 
-		update_cube(frame);
+		frame->qword = 0;
+		ittr++;
 	}
-
-	for(uint8_t i=0; i<64;)
+	else if(ittr > 128)
+		ittr = 0;
+	else
 	{
 		if(need_update == true)
 		{
-			frame->qword = frame->qword & ~(UINT64_C(1) << cube[i]);
+			if(ittr < 64)
+				frame->qword = frame->qword ^ (UINT64_C(1) << cube[ittr]);
+			else
+				frame->qword = frame->qword ^ (UINT64_C(1) << cube[ittr-64]);
 
 			need_update = false;
-			i++;
+			ittr++;
 		}
 
 		update_cube(frame);

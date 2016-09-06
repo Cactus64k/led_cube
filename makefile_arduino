@@ -27,3 +27,6 @@ clean:
 
 load:
 	avrdude -c $(PROGR) -p $(MCU) -P$(PORT) -b$(BRATE) -U flash:w:$(TARG).hex
+
+erase:
+	avrdude -c $(PROGR) -p $(MCU) -e
