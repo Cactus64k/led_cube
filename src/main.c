@@ -2,7 +2,6 @@
 
 bool need_update		= true;
 uint8_t cube_mode		= 0;
-void test_pwm();
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -69,51 +68,5 @@ int main(void)
 			cube_mode = 0;
 
 		update_cube(&frame);
-	}
-}
-
-void test_pwm()
-{
-	uint8_t transystors[] = {TRANS1_PIN, TRANS2_PIN, TRANS3_PIN, TRANS4_PIN};
-
-	uint8_t led_state[16];
-
-	for(uint8_t i=0; i<16; i++)
-		led_state[i] = 0;
-
-	uint8_t pos = 0;
-	for(uint8_t i=0; i<16; i++)
-	{
-		led_state[i] = pos;
-		pos +=16;
-	}
-
-	led_state[0] = 0;
-
-	TRANS_PORT = TRANS_PORT | _BV(transystors[2]);
-
-	uint16_t frame = 0;
-
-	while(1)
-	{
-		for(uint8_t i=0; i<255; i++)
-		{
-			for(uint8_t f=0; f<16; f++)
-			{
-				if(led_state[f] > i)
-					frame = frame | (UINT16_C(1) << f);
-				else
-					frame = frame & ~(UINT16_C(1) << f);
-			}
-
-			SPI_send_word(frame);
-
-//			for(uint8_t t=0; t<4; t++)
-//			{
-//				TRANS_PORT = TRANS_PORT | _BV(transystors[t]);
-//				//_delay_ms(MULTIPLEXING_DELAY);
-//				TRANS_PORT = TRANS_PORT & ~_BV(transystors[t]);
-//			}
-		}
 	}
 }
