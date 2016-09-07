@@ -9,6 +9,4 @@ void cube_slow_random(LED_FRAME* frame)
 		//frame->qword = frame->qword ^ (UINT64_C(1) << rand()%64);
 		need_update = false;
 	}
-
-	update_cube(frame);
 }

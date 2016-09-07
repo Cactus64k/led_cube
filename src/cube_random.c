@@ -7,8 +7,6 @@ void cube_random(LED_FRAME* frame)
 		random_64(&frame->qword);
 		need_update = false;
 	}
-
-	update_cube(frame);
 }
 
 

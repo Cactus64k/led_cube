@@ -39,7 +39,5 @@ void cube_filing(LED_FRAME* frame)
 			need_update = false;
 			ittr++;
 		}
-
-		update_cube(frame);
 	}
 }

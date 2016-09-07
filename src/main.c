@@ -50,44 +50,25 @@ int main(void)
 	sei();
 
 
-	DDRB	= DDRB | _BV(PB5);
-
-
 	LED_FRAME frame = {.qword = 0};
 
 	while(1)
 	{
-		switch (cube_mode)
+		if(cube_mode == 0)
 		{
-			case 0:
-			{
-				cube_self_test(&frame);
-				cube_mode++;
-				break;
-			}
-			case 1:
-			{
-				cube_slow_random(&frame);
-				break;
-			}
-			case 2:
-			{
-				cube_filing(&frame);
-				break;
-			}
-			case 3:
-			{
-				cube_random(&frame);
-				break;
-			}
-			case 0xFF:
-			{
-				cube_mode = 0;
-				break;
-			}
-			default:
-				break;
+			cube_self_test(&frame);
+			cube_mode++;
 		}
+		else if(cube_mode == 1)
+			cube_slow_random(&frame);
+		else if(cube_mode == 2)
+			cube_filing(&frame);
+		else if(cube_mode == 3)
+			cube_random(&frame);
+		else
+			cube_mode = 0;
+
+		update_cube(&frame);
 	}
 }
 
