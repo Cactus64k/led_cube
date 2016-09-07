@@ -3,20 +3,6 @@
 bool need_update		= true;
 uint8_t cube_mode		= 0;
 
-ISR(TIMER1_COMPA_vect)
-{
-	need_update = true;
-}
-
-ISR(PCINT1_vect)
-{
-	if((PINC & _BV(PC5)))
-		cube_mode++;
-
-	cube_mode = (cube_mode > 3)? 0: cube_mode;
-	eeprom_write_byte(EEPROM_MODE_ADDRES, cube_mode);
-}
-
 int main(void)
 {
 	TRANS_DDR	= (_BV(TRANS1_PIN) | _BV(TRANS2_PIN) | _BV(TRANS3_PIN) | _BV(TRANS4_PIN));
@@ -35,16 +21,16 @@ int main(void)
 	//##########################
 
 	cli();
-	TCCR1A	= 0x0;
-	TCCR1B	= _BV(WGM12) | _BV(CS12) | _BV(CS10);	// предделитель 1024, очистка таймера по прерыванию
-	TIMSK1	= _BV(OCIE1A);							// прерывание по совпадению
-	OCR1A	= (F_CPU/1024)/8-1;						// раз в 0.125 секунды
+	TCCR1A		= 0x0;
+	TCCR1B		= _BV(WGM12) | _BV(CS12) | _BV(CS10);	// предделитель 1024, очистка таймера по прерыванию
+	TIMSK1		= _BV(OCIE1A);							// прерывание по совпадению
+	OCR1A		= (F_CPU/1024)/8-1;						// раз в 0.125 секунды
 
 	//##########################
 
-	DDRC	= DDRC & ~_BV(PC5);
-	PCICR	= _BV(PCIE1);
-	PCMSK1	= _BV(PCINT13);
+	DDRC		= DDRC & ~_BV(PC5);
+	PCICR		= _BV(PCIE1);
+	PCMSK1		= _BV(PCINT13);
 
 	sei();
 

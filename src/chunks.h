@@ -46,6 +46,7 @@
 	} LED_FRAME;
 
 	extern bool need_update;
+	extern uint8_t cube_mode;
 
 	void SPI_send_word(uint16_t word);
 	void update_cube(LED_FRAME* frame);
