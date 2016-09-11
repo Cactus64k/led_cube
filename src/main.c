@@ -1,6 +1,7 @@
 #include "chunks.h"
 
 bool need_update		= true;
+bool need_break			= false;
 uint8_t cube_mode		= 0;
 
 int main(void)
@@ -34,16 +35,12 @@ int main(void)
 
 	sei();
 
-
 	LED_FRAME frame = {.qword = 0};
 
 	while(1)
 	{
 		if(cube_mode == 0)
-		{
 			cube_self_test(&frame);
-			cube_mode++;
-		}
 		else if(cube_mode == 1)
 			cube_slow_random(&frame);
 		else if(cube_mode == 2)
@@ -52,7 +49,5 @@ int main(void)
 			cube_random(&frame);
 		else
 			cube_mode = 0;
-
-		update_cube(&frame);
 	}
 }

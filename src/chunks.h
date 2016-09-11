@@ -37,7 +37,7 @@
 
 	#define MULTIPLEXING_DELAY 4.0
 
-#define EEPROM_MODE_ADDRES ((uint8_t*)0)
+	#define EEPROM_MODE_ADDRES ((uint8_t*)0)
 
 	typedef union LED_FRAME
 	{
@@ -46,6 +46,7 @@
 	} LED_FRAME;
 
 	extern bool need_update;
+	extern bool need_break;
 	extern uint8_t cube_mode;
 
 	void SPI_send_word(uint16_t word);

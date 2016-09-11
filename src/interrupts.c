@@ -8,8 +8,11 @@ ISR(TIMER1_COMPA_vect)
 ISR(PCINT1_vect)
 {
 	if((PINC & _BV(PC5)))
+	{
 		cube_mode++;
+		need_break = true;
+		eeprom_write_byte(EEPROM_MODE_ADDRES, cube_mode);
+	}
 
-	cube_mode = (cube_mode > 3)? 0: cube_mode;
-	eeprom_write_byte(EEPROM_MODE_ADDRES, cube_mode);
+
 }

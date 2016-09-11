@@ -2,11 +2,23 @@
 
 void cube_random(LED_FRAME* frame)
 {
-	if(need_update == true)
+	while(1)
 	{
-		random_64(&frame->qword);
-		need_update = false;
+		if(need_update == true)
+		{
+			random_64(&frame->qword);
+			need_update = false;
+		}
+
+		if(need_break == true)
+		{
+			need_break = false;
+			goto function_end;
+		}
+		update_cube(frame);
 	}
+
+	function_end:;
 }
 
 
